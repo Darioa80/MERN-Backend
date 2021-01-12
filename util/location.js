@@ -15,7 +15,8 @@ async function getCoordsForAddress(address) {
     }
     
     const coordinates = data.results[0].geometry.location;
-
+    console.log('Google API coordinates');
+    console.log(coordinates);
     return coordinates;
 }
 

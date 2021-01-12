@@ -2,6 +2,7 @@ const { v4: uuidv4 } = require('uuid'); //use to generate unique id's for data
 const { validationResult } = require('express-validator');
 const HttpError = require('../models/http-error');
 const getCoordsForAddress = require('../util/location');
+const Place = require('../models/place');
 
 let DUMMY_PLACES = [
     {
@@ -55,20 +56,37 @@ const createPlace = async (req,res,next) =>{  //data in the body of the POST req
 
     let coordinates;
     try{
-        coordinates = await getCoordsForAddress(address);
+        coordinates = await getCoordsForAddress(address);   //function imported from location.js from utility that uses Google API
     } catch (error){
         return next(error); //quits the function
     }
-    const createdPlace = {
+    const createdPlace = new Place({        //constructed as a mongoose model
+        title,
+        description,
+        address,
+        location: coordinates,
+        image: 'https://s.videogamer.com/meta/b411/cc5dc1cc-d9f5-4638-a42b-b6637be1cba8_Luigis_Mansion_3.jpg',
+        creator
+    });
+    
+    /*{
         id: uuidv4(),
         title: title,
         description: description,
         location: coordinates,
         address: address,
         creator: creator
+    }*/
+
+    //DUMMY_PLACES.push(createdPlace);
+    try {
+        await createdPlace.save();    //async task
+    }
+    catch (err){
+        const error = new HttpError('Creating place failed, please try again.', 500);
+        return next(error);
     }
 
-    DUMMY_PLACES.push(createdPlace);
     res.status(201).json({place: createdPlace});
 };
 
