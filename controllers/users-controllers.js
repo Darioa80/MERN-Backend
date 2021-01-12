@@ -1,7 +1,7 @@
 const { v4: uuidv4 } = require('uuid'); 
 const HttpError = require('../models/http-error');
 const { validationResult } = require('express-validator');
-
+const User = require('../models/user');
 
 let DUMMY_USERS = [{
     id: 'u1',
@@ -21,47 +21,74 @@ let DUMMY_USERS = [{
     }]
 }];
 
-const getUsers = (req, res, next) =>{
-    
-    if(DUMMY_USERS.length === 0){
-        throw(new HttpError('Could not find a place for the provided place id.', 404));
-   }
-    res.status(200).json(DUMMY_USERS);
+const getUsers = async (req, res, next) =>{
+    let allUsers;
+    try{
+        allUsers = await User.find({},'-password'); //excludes password field from returned objects
+    } catch(err){
+        return new(new HttpError('Feteching users failed. please try again later', 404));
+    }
+
+    res.status(200).json({users: allUsers.map(user => user.toObject({getters:true}))});
 
 }
 
-const SignUp = (req, res, next) => {
+const SignUp = async (req, res, next) => {
     const errors = validationResult(req);      //looks for error detection from check middle ware functions
     if(!errors.isEmpty()){
         console.log(errors);
-        throw new HttpError('Invalid inputs passed, please check your data.', 422);
+        return next(new HttpError('Invalid inputs passed, please check your data.', 422));
     }
     const { name, email, password, places } = req.body;
+    let existingUser;
 
-    const hasUser = DUMMY_USERS.find(u => u.email === email);
-    if(hasUser){
-        throw new HttpError ('Could not create user, email arleady exists.', 422);
-
+    try{
+        existingUser = await User.findOne({email});
+    } catch(err){
+        const error = new HttpError('Sign up failed, please try again later.', 500)
+        return next(error);
     }
-    const createdUser = {
-        id: uuidv4(),
+    
+    if(existingUser){
+        const error = new HttpError('User exists already, please login instead', 422)
+    }
+
+    const createdUser = new User({
+        //id: uuidv4(),
         name,       //short for name: name
         email,
-        password,
+        image: 'https://www.nintendonyc.com/_ui/img/carousel/hero-images/marioluigi2018.jpg',
+        password,       //passwords should be encrypted
         places
-    };
-    DUMMY_USERS.push(createdUser);
-    res.status(201).json({ user : createdUser})
+    });
+
+    try{
+        await createdUser.save();
+    } catch(err){
+        const error = new HttpError('Failed to sign up, please try again later.', 500)
+        return next(error);
+    }
+    
+    res.status(201).json({ user : createdUser.toObject({getters:true})});   //converting Mongoose object to standart javascript object
 
 }
 
-const LogIn = (req,res,next) => {
+const LogIn = async (req,res,next) => {
     const { email, password } = req.body;
-    const identifiedUser = DUMMY_USERS.find(currUser => currUser.email === email);
-    console.log(identifiedUser);
-    if(!identifiedUser || identifiedUser.password !== password){
-        throw new HttpError('could not identify user, credentials seem to be wrong', 401);
+
+    let existingUser;
+
+    try{
+        existingUser = await User.findOne({email});
+    } catch(err){
+        const error = new HttpError('Logging in failed, please try again later.', 500)
+        return next(error);
     }
+
+    if(!existingUser || existingUser.password !== password){
+        return next(new HttpError('Invalid credentials, cold not log you in', 401));
+    }
+    //connecting to the front end to update logIn state
     
     res.json({message: 'Logged In'});
 }

@@ -99,7 +99,7 @@ const updatePlaceByID = async (req,res,next) => {
     const errors = validationResult(req);      //looks for error detection from check middle ware functions
     console.log(errors);
     if(!errors.isEmpty()){
-        throw new HttpError('Invalid inputs passed, please check your data.', 422);
+        return next(new HttpError('Invalid inputs passed, please check your data.', 422));
     }
    
     const placeID = req.params.pid;  //id is in the url
