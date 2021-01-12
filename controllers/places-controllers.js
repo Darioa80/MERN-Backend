@@ -18,30 +18,44 @@ let DUMMY_PLACES = [
     },
 ];
 
-const getPlaceByID = (req,res, next) => {        //api/places/ :pid allows us to load places depending on place id
+const getPlaceByID = async (req,res, next) => {        //api/places/ :pid allows us to load places depending on place id
     const placeID = req.params.pid; 
-    const place = DUMMY_PLACES.find(p => {
-        return p.id === placeID;
-    });
+    let place;
 
-    if(!place){
-         throw(new HttpError('Could not find a place for the provided place id.', 404));
+    try{
+        place = await Place.findById(placeID);  //doesn't return a promise, can get from appending .exec()
+    } catch(err){
+        const error = new HttpError('Something went wrong, could not find a place', 500);   //error for request
+        return next(error);
     }
-        res.json({place: place});
-}
 
-const getPlacesByUserID = (req, res, next) => {
+    if(!place){ //ID doesn't exist error
+         const error = new HttpError('Could not find a place for the provided id.', 404);
+         return next(error);
+         //throw(new HttpError('Could not find a place for the provided place id.', 404));
+    }
+    res.json({place: place.toObject( {getters: true} )});   //getters:true gets rid of id underscore (data base has "_id: " instead of "id") => returns id as string and adds to property
+}                                                              //to Object works as this is an array
+
+const getPlacesByUserID = async (req, res, next) => {
 
     const userID = req.params.uid;
-    const places = DUMMY_PLACES.filter(u => { //filter returns an array
+    let places;
+    try{
+        places = await Place.find({creator: userID});   //returns an Arra with Mongoose
+    } catch(err){
+        const error = new HttpError('Feteching places failed, please try again later.', 500);
+        return next(error);
+    }
+    /*const places = DUMMY_PLACES.filter(u => { //filter returns an array
         return u.creator === userID ;
-    });
+    });*/
 
     if(places.length === 0){
        return next(new HttpError('Could not find places for the provided user id.', 404));
     }
 
-    res.json( {places} );
+    res.json( places.map(place => place.toObject({ getters: true})) );
 
 }
 
@@ -67,18 +81,9 @@ const createPlace = async (req,res,next) =>{  //data in the body of the POST req
         location: coordinates,
         image: 'https://s.videogamer.com/meta/b411/cc5dc1cc-d9f5-4638-a42b-b6637be1cba8_Luigis_Mansion_3.jpg',
         creator
+        //id: uuidv4(),
     });
-    
-    /*{
-        id: uuidv4(),
-        title: title,
-        description: description,
-        location: coordinates,
-        address: address,
-        creator: creator
-    }*/
 
-    //DUMMY_PLACES.push(createdPlace);
     try {
         await createdPlace.save();    //async task
     }
