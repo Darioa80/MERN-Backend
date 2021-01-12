@@ -95,24 +95,35 @@ const createPlace = async (req,res,next) =>{  //data in the body of the POST req
     res.status(201).json({place: createdPlace});
 };
 
-const updatePlaceByID = (req,res,next) => {
+const updatePlaceByID = async (req,res,next) => {
     const errors = validationResult(req);      //looks for error detection from check middle ware functions
     console.log(errors);
     if(!errors.isEmpty()){
         throw new HttpError('Invalid inputs passed, please check your data.', 422);
     }
    
-    const placeId = req.params.pid;  //id is in the url
+    const placeID = req.params.pid;  //id is in the url
     const { title, description } = req.body;    //in Patch requests, data is expected to be in the body
 
-    const updatedPlace= {...DUMMY_PLACES.find(current => current.id === placeId)}; //this creates a copy of the object
-    const placeIndex = DUMMY_PLACES.findIndex(current => current.id === placeId);
-    updatedPlace.title = title;
-    updatedPlace.description = description; 
+    let place; 
+
+    try{
+        place = await Place.findById(placeID);
+    } catch(err){
+        const error = new HttpError('Something went wrong', 500);
+        return next(error);
+    }
+
+    place.title = title;
+    place.description = description
+    try{
+        await place.save();
+    } catch(err){
+        const error = new HttpError('Something went wrong, could not update place', 500);
+        return next(error);
+    }
     
-    DUMMY_PLACES[placeIndex] = updatedPlace;    //the copy is used to update the actual array
-    
-    res.status(200).json({"Updated Object" : updatedPlace});
+    res.status(200).json({place: place.toObject({getters: true})});
      
 };
 
