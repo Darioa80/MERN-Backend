@@ -6,19 +6,6 @@ const Place = require('../models/place');
 const User = require('../models/user');
 const mongoose = require('mongoose');
 
-let DUMMY_PLACES = [
-    {
-    id: 'p1',
-    title: 'Empire State Building',
-    description: 'One of the most famous sky scrapers in the world!',
-    location: {
-        lat: 40.7484474,
-        lng: -73.9871516
-    },
-    address: '20 W 34th St, New York, NY 10001',
-    creator: 'u1'
-    },
-];
 
 const getPlaceByID = async (req,res, next) => {        //api/places/ :pid allows us to load places depending on place id
     const placeID = req.params.pid; 
@@ -42,22 +29,21 @@ const getPlaceByID = async (req,res, next) => {        //api/places/ :pid allows
 const getPlacesByUserID = async (req, res, next) => {
 
     const userID = req.params.uid;
-    let places;
+    let userPlaces;
     try{
-        places = await Place.find({creator: userID});   //returns an Arra with Mongoose
+       // places = await Place.find({creator: userID});   //returns an Array with Mongoose
+       userPlaces = await User.findById(userID).populate('places');
     } catch(err){
         const error = new HttpError('Feteching places failed, please try again later.', 500);
         return next(error);
     }
-    /*const places = DUMMY_PLACES.filter(u => { //filter returns an array
-        return u.creator === userID ;
-    });*/
 
-    if(places.length === 0){
+
+    if(userPlaces.length === 0 || !userPlaces){
        return next(new HttpError('Could not find places for the provided user id.', 404));
     }
 
-    res.json( places.map(place => place.toObject({ getters: true})) );
+    res.json( {places: userPlaces.map(place => place.toObject({ getters: true})) });
 
 }
 
@@ -153,7 +139,7 @@ const deletePlaceByID = async (req,res,next) => {
     const placeID = req.params.pid;
     let place;
     try{
-        place = await Place.findById(placeID).populate('creator');//allows us to work with a document on another collection, returns the User in this case
+        place = await Place.findById(placeID).populate('creator');//allows us to work with a document on another collection, returns the both Place and User documents
         console.log(place);
     } catch(err){
         const error = new HttpError('Something went wrong, could not delete place', 500);

@@ -1,25 +1,8 @@
-const { v4: uuidv4 } = require('uuid'); 
+
 const HttpError = require('../models/http-error');
 const { validationResult } = require('express-validator');
 const User = require('../models/user');
 
-let DUMMY_USERS = [{
-    id: 'u1',
-    name: 'Dario Andrade Mendoza', 
-    email: 'test@test.com',
-    password: 'password',
-    places : [{
-        id: 'p1',
-        title: 'Empire State Building',
-        description: 'One of the most famous sky scrapers in the world!',
-        location: {
-            lat: 40.7484474,
-            lng: -73.9871516
-        },
-        address: '20 W 34th St, New York, NY 10001',
-        creator: 'u1'
-    }]
-}];
 
 const getUsers = async (req, res, next) =>{
     let allUsers;
@@ -54,7 +37,6 @@ const SignUp = async (req, res, next) => {
     }
 
     const createdUser = new User({
-        //id: uuidv4(),
         name,       //short for name: name
         email,
         image: 'https://www.nintendonyc.com/_ui/img/carousel/hero-images/marioluigi2018.jpg',
