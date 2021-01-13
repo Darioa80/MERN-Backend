@@ -39,7 +39,7 @@ const SignUp = async (req, res, next) => {
         console.log(errors);
         return next(new HttpError('Invalid inputs passed, please check your data.', 422));
     }
-    const { name, email, password, places } = req.body;
+    const { name, email, password } = req.body;
     let existingUser;
 
     try{
@@ -59,7 +59,7 @@ const SignUp = async (req, res, next) => {
         email,
         image: 'https://www.nintendonyc.com/_ui/img/carousel/hero-images/marioluigi2018.jpg',
         password,       //passwords should be encrypted
-        places
+        places: []
     });
 
     try{

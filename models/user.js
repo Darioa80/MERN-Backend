@@ -8,7 +8,7 @@ const userSchema = new Schema({
     email: {type: String, require: true, unique: true}, //creates index, which speeds up searching and quering
     password : {type: String, require: true, minLenth: 6},
     image: {type: String, require: true},
-    places: {type: String, require: true}, 
+    places: [{ type: mongoose.Types.ObjectId, required : true, ref: 'Place' }] //connects to Place Schema
 
 });
 
