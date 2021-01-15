@@ -7,11 +7,18 @@ const HttpError = require('./models/http-error');
 const placesRoutes = require('./routes/places-routes'); //importing 
 const usersRoutes = require('./routes/users-routes');
 
-const url = `mongodb+srv://DarioAM:JtpgLpnIQMUa09Sb@mern.pdpya.mongodb.net/places?retryWrites=true&w=majority
+const url = `mongodb+srv://DarioAM:JtpgLpnIQMUa09Sb@mern.pdpya.mongodb.net/mern?retryWrites=true&w=majority
 `;
 const app = express();
 
 app.use(bodyParser.json()); //parse incoming request bodies and convert to JSON arrays and moves on to the next function
+
+app.use((req, res, next) => {
+    res.setHeader('Access-Control-Allow-Origin', '*'); //opens up this domain to be access from other domains (CORS error)
+    res.setHeader('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept, Authorization');
+    res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PATCH, DELETE')//Which Http methods to be usedfrom the front end
+    next();
+})
 
 app.use('/api/places/' , placesRoutes);  // => /api/places/...
 app.use('/api/users/', usersRoutes);
