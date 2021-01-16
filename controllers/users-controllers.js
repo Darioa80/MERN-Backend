@@ -77,7 +77,7 @@ const LogIn = async (req,res,next) => {
     }
     //connecting to the front end to update logIn state
     
-    res.json({message: 'Logged In'});
+    res.json({message: 'Logged In', user: existingUser.toObject({getters: true})});
 }
 
 exports.getUsers = getUsers;
