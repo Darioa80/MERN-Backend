@@ -123,6 +123,11 @@ const updatePlaceByID = async (req,res,next) => {
         return next(error);
     }
 
+    if(place.creator.toString() !== req.userID){   //added userID to request in previous middleware
+        const error = new HttpError('You are not allowed to edit this place', 401);
+        return next(error);
+    }
+
     place.title = title;
     place.description = description
     try{
@@ -149,6 +154,11 @@ const deletePlaceByID = async (req,res,next) => {
 
     if(!place){
         return next(new HttpError('Could not find place for this id.', 404));
+    }
+
+    if(place.creator.id !== req.userID){   //added userID to request in previous middleware, creator is the full user model due to previous populate function
+        const error = new HttpError('You are not allowed to delete this place', 401);
+        return next(error);
     }
 
     const imagePath = place.image;
