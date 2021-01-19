@@ -2,6 +2,7 @@ const express = require('express');     //you have to import expressin every fil
 const { check } = require('express-validator');
 
 const placesControllers = require('../controllers/places-controllers');
+const fileUpload = require('../middleware/file-upload');
 
 const router = express.Router();
 
@@ -16,6 +17,7 @@ router.get('/:pid', placesControllers.getPlaceByID);
 router.get('/user/:uid', placesControllers.getPlacesByUserID);
 
 router.post('/', 
+    fileUpload.single('image'),
     [                   //array of middleware functions to check request data
     check('title')
     .not()

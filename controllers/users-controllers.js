@@ -20,6 +20,7 @@ const SignUp = async (req, res, next) => {
     const errors = validationResult(req);      //looks for error detection from check middle ware functions
     if(!errors.isEmpty()){
         console.log(errors);
+
         return next(new HttpError('Invalid inputs passed, please check your data.', 422));
     }
     const { name, email, password } = req.body;
@@ -43,7 +44,7 @@ const SignUp = async (req, res, next) => {
     const createdUser = new User({
         name,       //short for name: name
         email,
-        image: 'https://www.nintendonyc.com/_ui/img/carousel/hero-images/marioluigi2018.jpg',
+        image: req.file.path,
         password,       //passwords should be encrypted
         places: []
     });

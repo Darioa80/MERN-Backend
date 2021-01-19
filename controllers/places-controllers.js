@@ -1,3 +1,4 @@
+const fs = require('fs'); 
 const { v4: uuidv4 } = require('uuid'); //use to generate unique id's for data
 const { validationResult } = require('express-validator');
 const HttpError = require('../models/http-error');
@@ -67,7 +68,7 @@ const createPlace = async (req,res,next) =>{  //data in the body of the POST req
         description,
         address,
         location: coordinates,
-        image: 'https://s.videogamer.com/meta/b411/cc5dc1cc-d9f5-4638-a42b-b6637be1cba8_Luigis_Mansion_3.jpg',
+        image: req.file.path,   //storing the path, not the file, store files on the local file system, not db
         creator
         //id: uuidv4(),
     });
@@ -150,6 +151,8 @@ const deletePlaceByID = async (req,res,next) => {
         return next(new HttpError('Could not find place for this id.', 404));
     }
 
+    const imagePath = place.image;
+
     try {
         const sess = await mongoose.startSession();
         sess.startTransaction();
@@ -162,7 +165,9 @@ const deletePlaceByID = async (req,res,next) => {
         return next(error);
     }
   
-
+    fs.unlink(imagePath, err => {
+        console.log(err);
+    });
     res.status(200).json({message: 'Deleted place.'});
 }
 
