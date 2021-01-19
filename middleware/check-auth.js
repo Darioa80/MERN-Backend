@@ -1,7 +1,10 @@
-const jwt = requite('jwsonwebtoken');
+const jwt = require('jsonwebtoken');
 const HttpError = require("../models/http-error");
 
 module.exports = (req, res, next) => {
+    if(req.method === 'OPTIONS'){   //adjustment to enseure options requests (sent by the browser) are not blocked
+        return next();
+    }
     try{
     const token = req.headers.authorization.split(' ')[1];   //look at app.js for expected headers => Authorization: 'Bearer TOKEN'
     if(!token){
