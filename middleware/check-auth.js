@@ -14,7 +14,7 @@ module.exports = (req, res, next) => {
     req.userData = { userId: decodedToken.userId};       //can always add data to request object
     next();
     }catch(err){
-        const error = new HttpError('Autnentication failed!', 401);
+        const error = new HttpError('Autnentication failed!', 403);
         return(next(error));
     }
 

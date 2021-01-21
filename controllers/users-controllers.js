@@ -109,7 +109,7 @@ const LogIn = async (req,res,next) => {
     }
 
     if(!isValidPassword){
-        return next(new HttpError('Invalid credentials, coold not log you in', 401));
+        return next(new HttpError('Invalid credentials, coold not log you in', 403));
 
     }
     //Will Generate Token here as the user has succesfully logged in
