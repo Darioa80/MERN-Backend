@@ -2,7 +2,7 @@ const multer = require('multer');
 const { uuid } = require('uuidv4')
 
 const MIME_TYPE_MAP = {    //mime types tell us what te of file we are dealing with and identify extension
-    'image/png': 'png',
+    'image/png': 'PNG',
     'image/jpg': 'jpg',
     'image/jpeg': 'jpeg'
 }

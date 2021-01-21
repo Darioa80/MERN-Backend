@@ -54,7 +54,8 @@ const createPlace = async (req,res,next) =>{  //data in the body of the POST req
         console.log(errors);
         return next(new HttpError('Invalid inputs passed, please check your data.', 422));    //need to use next due to async
     }
-    const { title, description, address, creator } = req.body;
+    const { title, description, address } = req.body;
+    
     console.log(address);
 
     let coordinates;
@@ -69,13 +70,13 @@ const createPlace = async (req,res,next) =>{  //data in the body of the POST req
         address,
         location: coordinates,
         image: req.file.path,   //storing the path, not the file, store files on the local file system, not db
-        creator
+        creator: req.userData.userId
         //id: uuidv4(),
     });
 
     let user;
     try{
-        user =  await User.findById(creator);
+        user =  await User.findById(req.userData.userId);
         
     } catch(err){
         const error = new HttpError('Creating place failed, please try again.', 500);
