@@ -12,7 +12,7 @@ const usersRoutes = require('./routes/users-routes');
 
 const url = 
 //`mongodb+srv://DarioAM:JtpgLpnIQMUa09Sb@mern.pdpya.mongodb.net/mern?retryWrites=true&w=majority`
-`mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASSWORD}@${process.env.DB_NAME}.pdpya.mongodb.net/mern?retryWrites=true&w=majority`
+`mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASSWORD}@mern.pdpya.mongodb.net/${process.env.DB_NAME}?retryWrites=true&w=majority`
 //process.env is provided by node, process is always avaiable
 ;
 const app = express();
