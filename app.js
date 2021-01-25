@@ -8,9 +8,13 @@ const HttpError = require('./models/http-error');
 
 const placesRoutes = require('./routes/places-routes'); //importing 
 const usersRoutes = require('./routes/users-routes');
+//usually want to change username, password and db name for when deploying the application
 
-const url = `mongodb+srv://DarioAM:JtpgLpnIQMUa09Sb@mern.pdpya.mongodb.net/mern?retryWrites=true&w=majority
-`;
+const url = 
+//`mongodb+srv://DarioAM:JtpgLpnIQMUa09Sb@mern.pdpya.mongodb.net/mern?retryWrites=true&w=majority`
+`mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASSWORD}@${process.env.DB_NAME}.pdpya.mongodb.net/mern?retryWrites=true&w=majority`
+//process.env is provided by node, process is always avaiable
+;
 const app = express();
 
 app.use(bodyParser.json()); //parse incoming request bodies and convert to JSON arrays and moves on to the next function
