@@ -158,8 +158,8 @@ const deletePlaceByID = async (req,res,next) => {
     }
     console.log("comparing ID's");
     console.log(place.creator.id);
-    console.log(req.userID);
-    if(place.creator.id !== req.userID){   //added userID to request in previous middleware, creator is the full user model due to previous populate function
+    console.log(req.userData.userId);
+    if(place.creator.id !== req.userData.userId){   //added userID to request in previous middleware, creator is the full user model due to previous populate function
         const error = new HttpError('You are not allowed to delete this place', 401);
         return next(error);
     }
