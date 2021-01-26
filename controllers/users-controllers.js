@@ -57,10 +57,11 @@ const SignUp = async (req, res, next) => {
         password: hashedPassword,       //passwords should be encrypted, never stored as plain text in data base
         places: []
     });
-    
+    console.log(createdUser);
     try{
         await createdUser.save();
-        console.log('hi');
+        console.log('createdUser:');
+        console.log(createdUser);
     } catch(err){
         const error = new HttpError('Failed to sign up, please try again later.', 500)
         return next(error);
