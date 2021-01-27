@@ -119,12 +119,13 @@ const updatePlaceByID = async (req,res,next) => {
 
     try{
         place = await Place.findById(placeID);
+        console.log(place);
     } catch(err){
         const error = new HttpError('Something went wrong', 500);
         return next(error);
     }
 
-    if(place.creator.toString() !== req.userID){   //added userID to request in previous middleware
+    if(place.creator.toString() !== req.userData.userId){   //added userID to request in previous middleware
         const error = new HttpError('You are not allowed to edit this place', 401);
         return next(error);
     }

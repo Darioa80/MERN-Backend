@@ -14,6 +14,7 @@ module.exports = (req, res, next) => {
     console.log("Printing token - Check-auth.js");
     console.log(decodedToken);
     req.userData = { userId: decodedToken.userId};       //can always add data to request object
+    console.log(req.userData);
     next();
     }catch(err){
         const error = new HttpError('Autnentication failed!', 403);
