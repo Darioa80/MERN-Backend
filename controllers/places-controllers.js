@@ -66,14 +66,11 @@ const createPlace = async (req, res, next) => {
   //data in the body of the POST request - encode data in the request
   const errors = validationResult(req); //looks for error detection from check middle ware functions
   if (!errors.isEmpty()) {
-    console.log(errors);
     return next(
       new HttpError("Invalid inputs passed, please check your data.", 422)
     ); //need to use next due to async
   }
   const { title, description, address } = req.body;
-
-  console.log(req);
 
   let coordinates;
   try {
@@ -131,7 +128,7 @@ const createPlace = async (req, res, next) => {
 
 const updatePlaceByID = async (req, res, next) => {
   const errors = validationResult(req); //looks for error detection from check middle ware functions
-  console.log(errors);
+
   if (!errors.isEmpty()) {
     return next(
       new HttpError("Invalid inputs passed, please check your data.", 422)
@@ -145,7 +142,6 @@ const updatePlaceByID = async (req, res, next) => {
 
   try {
     place = await Place.findById(placeID);
-    console.log(place);
   } catch (err) {
     const error = new HttpError("Something went wrong", 500);
     return next(error);
@@ -177,7 +173,6 @@ const deletePlaceByID = async (req, res, next) => {
   let place;
   try {
     place = await Place.findById(placeID).populate("creator"); //allows us to work with a document on another collection, returns the both Place and User documents
-    console.log(place);
   } catch (err) {
     const error = new HttpError(
       "Something went wrong, could not delete place",

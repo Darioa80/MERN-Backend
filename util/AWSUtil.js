@@ -1,5 +1,7 @@
 const fs = require("fs");
+const HttpError = require("../models/http-error");
 var aws = require("aws-sdk");
+
 const s3 = new aws.S3();
 
 const AWSUpload = (req) => {
@@ -12,7 +14,11 @@ const AWSUpload = (req) => {
   };
 
   s3.upload(params, function (error, data) {
-    console.log(error, data);
+    if (error) {
+      const error = new HttpError(
+        "Failed to upload to amazon bucket, try again later"
+      );
+    }
   });
 };
 

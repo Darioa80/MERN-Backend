@@ -24,7 +24,6 @@ const getUsers = async (req, res, next) => {
 };
 
 const SignUp = async (req, res, next) => {
-  console.log(req.file);
   const errors = validationResult(req); //looks for error detection from check middle ware functions
   if (!errors.isEmpty()) {
     console.log(errors);
@@ -39,7 +38,6 @@ const SignUp = async (req, res, next) => {
   try {
     existingUser = await User.findOne({ email: email });
   } catch (err) {
-    console.log(err);
     const error = new HttpError("Sign up failed, please try again later.", 500);
     return next(error);
   }
@@ -72,7 +70,7 @@ const SignUp = async (req, res, next) => {
     password: hashedPassword, //passwords should be encrypted, never stored as plain text in data base
     places: [],
   });
-  //console.log(createdUser);
+
   try {
     await createdUser.save();
   } catch (err) {
