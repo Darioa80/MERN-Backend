@@ -96,7 +96,7 @@ const SignUp = async (req, res, next) => {
     );
     return next(error);
   }
-
+  console.log(createdUser.id);
   res
     .status(201)
     .json({ user: createdUser.id, email: createdUser.email, token: token }); //converting Mongoose object to standart javascript object
